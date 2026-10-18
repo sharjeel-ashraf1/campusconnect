@@ -12,5 +12,19 @@
             <li><strong><a href="/dashboard/post/<%= p.id %>"><%= p.title %></a></strong> by <%= p.username %><br><%= p.body %></li>
     <% }) %>
   </ul>
+    <div id="tab-banner"></div>
+  <script>
+    // FIX for DOM-based XSS: textContent (not innerHTML) is used, so
+    // whatever is in location.hash is always treated as plain text and
+    // can never be parsed as HTML or execute as a script.
+    function showTabFromHash() {
+      var hash = decodeURIComponent(location.hash.substring(1));
+      if (hash) {
+        document.getElementById('tab-banner').textContent = 'Viewing tab: ' + hash;
+      }
+    }
+    window.addEventListener('hashchange', showTabFromHash);
+    showTabFromHash();
+  </script>
 </body>
 </html>
