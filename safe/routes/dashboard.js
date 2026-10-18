@@ -91,5 +91,22 @@ router.post("/post/:id/comment", (req, res) => {
     },
   );
 });
+router.get("/settings", (req, res) => {
+  res.render("settings", { message: null, user: req.session.user });
+});
 
+// FIX for CSRF: csurf middleware (enabled in app.js) validates the
+// _csrf token on every POST. A request without a valid token — like the
+// one from csrf-attack.html, which has no way to know this token — is
+// rejected before this handler even runs.
+router.post("/settings/update-email", (req, res) => {
+  const { email } = req.body;
+  const userId = req.session.user.id;
+  db.run("UPDATE users SET email = ? WHERE id = ?", [email, userId], () => {
+    res.render("settings", {
+      message: "Email updated to " + email,
+      user: req.session.user,
+    });
+  });
+});
 module.exports = router;

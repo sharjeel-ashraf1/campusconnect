@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
+const csrf = require("csurf");
 
 const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
@@ -22,8 +23,11 @@ app.use(
   }),
 );
 
+app.use(csrf());
+
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
+  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
@@ -37,6 +41,15 @@ app.use("/dashboard", requireLogin, dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.redirect(req.session.user ? "/dashboard" : "/login");
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === "EBADCSRFTOKEN") {
+    return res
+      .status(403)
+      .send("Request blocked: invalid or missing CSRF token.");
+  }
+  next(err);
 });
 
 app.listen(PORT, () => {
