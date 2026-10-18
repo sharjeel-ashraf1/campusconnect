@@ -5,11 +5,11 @@
   <h1>Welcome, <%= user.full_name %></h1>
   <p><a href="/logout">Log out</a></p>
   <p><a href="/dashboard/check-grade">Check Grade Record</a></p>
-    <p><a href="/dashboard/search">Search Posts</a></p>
+  <p><a href="/dashboard/search">Search Posts</a></p>
   <h2>Recent posts</h2>
   <ul>
     <% posts.forEach(function(p) { %>
-      <li><strong><%= p.title %></strong> by <%= p.username %><br><%= p.body %></li>
+      <li><strong><a href="/dashboard/post/<%= p.id %>"><%= p.title %></a></strong> by <%= p.username %><br><%= p.body %></li>
     <% }) %>
   </ul>
 </body>
