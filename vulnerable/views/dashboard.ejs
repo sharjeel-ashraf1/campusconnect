@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>CampusConnect — Dashboard</title></head>
+<body>
+  <h1>Welcome, <%= user.full_name %></h1>
+  <p><a href="/logout">Log out</a></p>
+  <h2>Recent posts</h2>
+  <ul>
+    <% posts.forEach(function(p) { %>
+      <li><strong><%= p.title %></strong> by <%= p.username %><br><%= p.body %></li>
+    <% }) %>
+  </ul>
+</body>
+</html>

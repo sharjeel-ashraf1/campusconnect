@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>CampusConnect — Login</title></head>
+<body>
+  <h1>CampusConnect Login</h1>
+  <% if (error) { %>
+    <p style="color:red;"><%= error %></p>
+  <% } %>
+  <form method="POST" action="/login">
+    <label>Username: <input type="text" name="username"></label><br>
+    <label>Password: <input type="password" name="password"></label><br>
+    <button type="submit">Log in</button>
+  </form>
+</body>
+</html>
