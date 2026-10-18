@@ -12,5 +12,20 @@
       <li><strong><a href="/dashboard/post/<%= p.id %>"><%= p.title %></a></strong> by <%= p.username %><br><%= p.body %></li>
     <% }) %>
   </ul>
+    <div id="tab-banner"></div>
+  <script>
+    // VULNERABLE: reads location.hash directly from the URL and injects it
+    // into the page via innerHTML, with no sanitization. This never touches
+    // the server — it's a pure client-side (DOM-based) XSS. A victim just
+    // has to click a malicious link containing a #fragment.
+    function showTabFromHash() {
+      var hash = decodeURIComponent(location.hash.substring(1)); // remove leading '#'
+      if (hash) {
+        document.getElementById('tab-banner').innerHTML = 'Viewing tab: ' + hash;
+      }
+    }
+    window.addEventListener('hashchange', showTabFromHash);
+    showTabFromHash();
+  </script>
 </body>
 </html>
