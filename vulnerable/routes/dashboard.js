@@ -89,5 +89,21 @@ router.post("/post/:id/comment", (req, res) => {
     },
   );
 });
+router.get("/settings", (req, res) => {
+  res.render("settings", { message: null, user: req.session.user });
+});
 
+// VULNERABLE: no CSRF token check. Any site can submit this form on behalf
+// of a logged-in victim, because the browser automatically attaches the
+// victim's session cookie to the request.
+router.post("/settings/update-email", (req, res) => {
+  const { email } = req.body;
+  const userId = req.session.user.id;
+  db.run("UPDATE users SET email = ? WHERE id = ?", [email, userId], () => {
+    res.render("settings", {
+      message: "Email updated to " + email,
+      user: req.session.user,
+    });
+  });
+});
 module.exports = router;
