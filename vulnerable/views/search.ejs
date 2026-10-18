@@ -8,6 +8,9 @@
     <label>Search: <input type="text" name="q" value="<%= query %>"></label>
     <button type="submit">Search</button>
   </form>
+    <% if (query) { %>
+    <p>Showing results for: <%- query %></p>
+  <% } %>
   <% if (error) { %>
     <p style="color:red;">Error: <%= error %></p>
   <% } %>
