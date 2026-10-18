@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>CampusConnect — Search Posts</title></head>
+<body>
+  <h1>Search Posts</h1>
+  <p><a href="/dashboard">Back to dashboard</a></p>
+  <form method="GET" action="/dashboard/search/results">
+    <label>Search: <input type="text" name="q" value="<%= query %>"></label>
+    <button type="submit">Search</button>
+  </form>
+  <% if (error) { %>
+    <p style="color:red;">Error: <%= error %></p>
+  <% } %>
+  <% if (results) { %>
+    <h2>Results</h2>
+    <ul>
+      <% results.forEach(function(r) { %>
+        <li><strong><%= r.title %></strong>: <%= r.body %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</body>
+</html>

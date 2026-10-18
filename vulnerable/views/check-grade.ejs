@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>CampusConnect — Check Grade Record</title></head>
+<body>
+  <h1>Check Grade Record</h1>
+  <p><a href="/dashboard">Back to dashboard</a></p>
+  <form method="GET" action="/dashboard/check-grade/result">
+    <label>Student ID: <input type="text" name="student_id" value="<%= studentId %>"></label>
+    <button type="submit">Check</button>
+  </form>
+  <% if (result) { %>
+    <h2><%= result %></h2>
+  <% } %>
+</body>
+</html>

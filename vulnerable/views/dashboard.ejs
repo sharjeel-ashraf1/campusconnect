@@ -4,6 +4,8 @@
 <body>
   <h1>Welcome, <%= user.full_name %></h1>
   <p><a href="/logout">Log out</a></p>
+  <p><a href="/dashboard/check-grade">Check Grade Record</a></p>
+    <p><a href="/dashboard/search">Search Posts</a></p>
   <h2>Recent posts</h2>
   <ul>
     <% posts.forEach(function(p) { %>
