@@ -12,18 +12,18 @@ router.get("/login", (req, res) => {
   res.render("login", { error: null });
 });
 
-// NOTE: this is the SAFE baseline query for now.
-// We will intentionally rewrite this to be vulnerable in the next step.
+// VULNERABLE: username AND password are concatenated directly into SQL.
+// This is intentional — a classic SQL injection login bypass for the assignment.
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  db.get("SELECT * FROM users WHERE username = ?", [username], (err, user) => {
-    if (err) return res.render("login", { error: "Server error" });
-    if (!user)
-      return res.render("login", { error: "Invalid username or password" });
+  const query = `SELECT * FROM users WHERE username = '${username}' AND password_plain = '${password}'`;
+  console.log("[VULNERABLE QUERY]", query);
 
-    const ok = bcrypt.compareSync(password, user.password_hash);
-    if (!ok)
+  db.get(query, (err, user) => {
+    if (err)
+      return res.render("login", { error: "Server error: " + err.message });
+    if (!user)
       return res.render("login", { error: "Invalid username or password" });
 
     req.session.user = {

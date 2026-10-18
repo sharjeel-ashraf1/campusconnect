@@ -56,10 +56,10 @@ db.serialize(() => {
   ];
 
   const insertUser = db.prepare(
-    "INSERT INTO users (username, password_hash, email, full_name, bio, is_admin) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO users (username, password_hash, password_plain, email, full_name, bio, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)",
   );
   for (const [username, pw, email, fullName, bio, isAdmin] of users) {
-    insertUser.run(username, hash(pw), email, fullName, bio, isAdmin);
+    insertUser.run(username, hash(pw), pw, email, fullName, bio, isAdmin);
   }
   insertUser.finalize();
 
