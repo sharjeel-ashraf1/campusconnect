@@ -16,4 +16,52 @@ router.get("/", (req, res) => {
   );
 });
 
+router.get("/check-grade", (req, res) => {
+  res.render("check-grade", { result: null, studentId: "" });
+});
+
+// FIX for SQL Injection (Intermediate): parameterized query.
+// student_id can never alter the SQL structure now, regardless of
+// what's typed into it.
+router.get("/check-grade/result", (req, res) => {
+  const { student_id } = req.query;
+  db.get(
+    "SELECT * FROM grades WHERE student_id = ?",
+    [student_id],
+    (err, row) => {
+      if (err)
+        return res.render("check-grade", {
+          result: "error: " + err.message,
+          studentId: student_id,
+        });
+      const result = row ? "Record found" : "No record found";
+      res.render("check-grade", { result, studentId: student_id });
+    },
+  );
+});
+
+router.get("/search", (req, res) => {
+  res.render("search", { results: null, query: "", error: null });
+});
+
+// FIX for SQL Injection (Advanced): parameterized query. The % wildcards
+// are now data, not part of the SQL string, so UNION-based injection
+// and schema enumeration are no longer possible through this field.
+router.get("/search/results", (req, res) => {
+  const { q } = req.query;
+  db.all(
+    "SELECT title, body FROM posts WHERE title LIKE ?",
+    ["%" + q + "%"],
+    (err, rows) => {
+      if (err)
+        return res.render("search", {
+          results: null,
+          query: q,
+          error: err.message,
+        });
+      res.render("search", { results: rows, query: q, error: null });
+    },
+  );
+});
+
 module.exports = router;
