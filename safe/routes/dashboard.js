@@ -20,9 +20,6 @@ router.get("/check-grade", (req, res) => {
   res.render("check-grade", { result: null, studentId: "" });
 });
 
-// FIX for SQL Injection (Intermediate): parameterized query.
-// student_id can never alter the SQL structure now, regardless of
-// what's typed into it.
 router.get("/check-grade/result", (req, res) => {
   const { student_id } = req.query;
   db.get(
@@ -44,9 +41,6 @@ router.get("/search", (req, res) => {
   res.render("search", { results: null, query: "", error: null });
 });
 
-// FIX for SQL Injection (Advanced): parameterized query. The % wildcards
-// are now data, not part of the SQL string, so UNION-based injection
-// and schema enumeration are no longer possible through this field.
 router.get("/search/results", (req, res) => {
   const { q } = req.query;
   db.all(
@@ -60,6 +54,40 @@ router.get("/search/results", (req, res) => {
           error: err.message,
         });
       res.render("search", { results: rows, query: q, error: null });
+    },
+  );
+});
+
+router.get("/post/:id", (req, res) => {
+  const postId = req.params.id;
+  db.get(
+    "SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id = ?",
+    [postId],
+    (err, post) => {
+      if (!post) return res.redirect("/dashboard");
+      db.all(
+        "SELECT comments.*, users.username FROM comments JOIN users ON comments.user_id = users.id WHERE post_id = ? ORDER BY comments.id ASC",
+        [postId],
+        (err2, comments) => {
+          res.render("post", { post, comments: comments || [] });
+        },
+      );
+    },
+  );
+});
+
+// FIX for Stored XSS: comment body is still saved as-is (that part of
+// storage isn't the bug), but the VIEW now renders it with <%= %>
+// (escaped output) instead of <%- %>. See safe/views/post.ejs.
+router.post("/post/:id/comment", (req, res) => {
+  const postId = req.params.id;
+  const userId = req.session.user.id;
+  const { body } = req.body;
+  db.run(
+    "INSERT INTO comments (post_id, user_id, body) VALUES (?, ?, ?)",
+    [postId, userId, body],
+    () => {
+      res.redirect("/dashboard/post/" + postId);
     },
   );
 });

@@ -9,7 +9,7 @@
   <h2>Recent posts</h2>
   <ul>
     <% posts.forEach(function(p) { %>
-      <li><strong><%= p.title %></strong> by <%= p.username %><br><%= p.body %></li>
+            <li><strong><a href="/dashboard/post/<%= p.id %>"><%= p.title %></a></strong> by <%= p.username %><br><%= p.body %></li>
     <% }) %>
   </ul>
 </body>
